@@ -1,13 +1,24 @@
 import Fastify from 'fastify'
+import { tasksRoutes } from './routes/tasks.routes'
 
-const fastify = Fastify({
-  logger: true,
+const app = Fastify({
+	logger: true,
 })
 
-fastify.get('/', (request, reply) => {
-  reply.send({ hello: 'world' })
+app.register(tasksRoutes, { prefix: '/tasks' })
+
+app.addHook('onRequest', (request, reply, done) => {
+	console.time('Timer')
+
+  done()
 })
 
-fastify.listen({ port: 3000 }, (err, address) => {
-  if (err) throw err
+app.addHook('onResponse', (request, reply, done) => {
+	console.timeEnd('Timer')
+
+  done()
+})
+
+app.listen({ port: 3000 }, (err, address) => {
+	if (err) throw err
 })
